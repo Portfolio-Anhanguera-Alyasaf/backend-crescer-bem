@@ -1,12 +1,15 @@
 package com.anhanguera.crescerbem.services;
 
-import com.anhanguera.crescerbem.payloads.user.response.UserResponseDto;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtService {
-    String generateToken(UserDetails userDetails);
+    String generateToken(UserDetails userDetails, long expiration);
 
     boolean isTokenValid(String token);
 
-    UserResponseDto getUserDetails(String token);
+    UserDetails getUserDetails(String token);
+
+    boolean isRefreshTokenValid(String token);
+
+    String generateRefreshToken(UserDetails userDetails, long expiration);
 }

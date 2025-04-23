@@ -49,6 +49,18 @@ public class RestExceptionHandler {
         );
     }
 
+    @ExceptionHandler(TokenJwtInvalidException.class)
+    public ResponseEntity<ExceptionDetails> handlerTokenJwtInvalidException(TokenJwtInvalidException ex) {
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .title("TokenJwtInvalid exception")
+                        .status(HttpStatus.UNAUTHORIZED.value())
+                        .timestamp(LocalDateTime.now())
+                        .details(ex.getMessage())
+                        .build(), HttpStatus.UNAUTHORIZED
+        );
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ExceptionDetails> handlerUsernameNotFoundException(UsernameNotFoundException ex) {
         return new ResponseEntity<>(

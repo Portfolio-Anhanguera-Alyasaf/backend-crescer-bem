@@ -1,6 +1,5 @@
 package com.anhanguera.crescerbem.services.impl;
 
-import com.anhanguera.crescerbem.payloads.user.response.UserResponseDto;
 import com.anhanguera.crescerbem.repositories.UserRepository;
 import com.anhanguera.crescerbem.services.JwtService;
 import io.jsonwebtoken.Claims;
@@ -24,15 +23,13 @@ public class JwtServiceImpl implements JwtService {
     @Value("${security.jwt.secret}")
     private String secret;
 
-    @Value("${security.jwt.expiration}")
-    private long expiration;
-
     @Override
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, long expiration) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(generateExpirationToken(expiration))
+                .claim("type", "access")
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -49,14 +46,28 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public UserResponseDto getUserDetails(String token) {
+    public UserDetails getUserDetails(String token) {
         return repository.findByEmail(getClaims(token).getSubject())
-                .map(user -> new UserResponseDto(user.getUserId(),
-                        user.getEmail(),
-                        user.getName(),
-                        user.getChildrenNumber(),
-                        user.getKind()))
                 .orElseThrow(() -> new UsernameNotFoundException("Ops! Usuário não encontrado."));
+    }
+
+    @Override
+    public boolean isRefreshTokenValid(String token) {
+        var claims = getClaims(token);
+        var type = (String) claims.get("type");
+
+        return type.equals("refresh");
+    }
+
+    @Override
+    public String generateRefreshToken(UserDetails userDetails, long expiration) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date())
+                .expiration(generateExpirationToken(expiration))
+                .claim("type", "refresh")
+                .signWith(getSecretKey())
+                .compact();
     }
 
     private Claims getClaims(String token) {
@@ -69,5 +80,9 @@ public class JwtServiceImpl implements JwtService {
 
     private SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    private Date generateExpirationToken(long expiration) {
+        return new Date(System.currentTimeMillis() + expiration);
     }
 }
