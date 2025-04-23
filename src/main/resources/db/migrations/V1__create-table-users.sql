@@ -1,0 +1,12 @@
+CREATE TABLE tb_users (
+    user_id UUID PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    password VARCHAR(100),
+    kind TEXT NOT NULL,
+    children_number INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255)
+);
