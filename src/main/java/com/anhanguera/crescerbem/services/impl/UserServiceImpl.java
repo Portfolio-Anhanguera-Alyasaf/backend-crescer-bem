@@ -1,6 +1,8 @@
 package com.anhanguera.crescerbem.services.impl;
 
 import com.anhanguera.crescerbem.entities.User;
+import com.anhanguera.crescerbem.exceptions.BusinessException;
+import com.anhanguera.crescerbem.exceptions.EntityNotFoundException;
 import com.anhanguera.crescerbem.mappers.UserMapper;
 import com.anhanguera.crescerbem.payloads.CreatedResponseDto;
 import com.anhanguera.crescerbem.payloads.PagerResponseDto;
@@ -16,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -25,6 +28,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final PasswordEncoder encoder;
 
     @Override
     public PaginationDto<UserResponseDto> getAll(int page, int pageSize) {
@@ -43,7 +47,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CreatedResponseDto create(CreateUserDto createUserDto) {
-        User user = repository.save(mapper.requestDtoToEntity(createUserDto));
+        var userExists = repository.findByEmail(createUserDto.email());
+        if (userExists.isPresent()) throw new BusinessException("Ops! Esse email já está em uso.");
+
+        var newDto = CreateUserDto.builder()
+                .name(createUserDto.name())
+                .email(createUserDto.email())
+                .childrenNumber(createUserDto.childrenNumber())
+                .kind(createUserDto.kind())
+                .password(encoder.encode(createUserDto.password()))
+                .build();
+
+        User user = repository.save(mapper.requestDtoToEntity(newDto));
         return new CreatedResponseDto(user.getUserId());
     }
 
@@ -61,7 +76,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getById(UUID id) {
         return repository.findById(id)
                 .map(mapper::entityToResponseDto)
-                .orElseThrow();
+                .orElseThrow(() -> new EntityNotFoundException("Ops! Usuário não encontrado."));
     }
 
     @Override
