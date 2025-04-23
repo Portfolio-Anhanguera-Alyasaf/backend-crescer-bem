@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public CreatedResponseDto create(CreateUserDto createUserDto) {
         var userExists = repository.findByEmail(createUserDto.email());
         if (userExists.isPresent()) throw new BusinessException("Ops! Esse email já está em uso.");
@@ -63,6 +65,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UpdatedResponseDto update(UUID id, UpdateUserDto updateUserDto) {
         User userExists = repository.findById(id)
                 .orElseThrow();

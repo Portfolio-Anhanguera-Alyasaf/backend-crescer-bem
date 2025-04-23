@@ -29,4 +29,11 @@ public class Consultation extends BaseEntity {
 
     @Column(name = "date_consult")
     private LocalDateTime dateConsult;
+
+
+    public Consultation(String doctorName, String hospitalName, LocalDateTime dateConsult) {
+        this.doctorName = doctorName;
+        this.hospitalName = hospitalName;
+        this.dateConsult = dateConsult;
+    }
 }

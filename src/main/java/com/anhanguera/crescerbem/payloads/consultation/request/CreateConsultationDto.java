@@ -1,4 +1,10 @@
 package com.anhanguera.crescerbem.payloads.consultation.request;
 
-public record CreateConsultationDto() {
+import java.time.LocalDateTime;
+
+public record CreateConsultationDto(
+        String doctorName,
+        String hospitalName,
+        LocalDateTime dateConsult
+) {
 }
