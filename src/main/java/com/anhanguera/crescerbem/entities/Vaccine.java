@@ -25,7 +25,4 @@ public class Vaccine extends BaseEntity {
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "applied")
-    private boolean applied;
 }

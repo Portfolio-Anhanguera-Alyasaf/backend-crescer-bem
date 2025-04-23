@@ -46,14 +46,4 @@ public class Children extends BaseEntity {
     @OneToMany
     @JoinColumn(name = "child")
     private Set<ChildVaccine> childVaccines = new HashSet<>();
-
-    @PostPersist
-    public void postPersist() {
-        this.setCreatedBy(this.getUser().getEmail());
-    }
-
-    @PostUpdate
-    public void postUpdate() {
-        this.setUpdatedBy(this.getUser().getEmail());
-    }
 }

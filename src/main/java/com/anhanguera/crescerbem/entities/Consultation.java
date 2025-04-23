@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -25,4 +26,7 @@ public class Consultation extends BaseEntity {
 
     @Column(name = "hospital_name")
     private String hospitalName;
+
+    @Column(name = "date_consult")
+    private LocalDateTime dateConsult;
 }
