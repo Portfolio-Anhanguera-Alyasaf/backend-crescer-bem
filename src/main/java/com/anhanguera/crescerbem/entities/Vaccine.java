@@ -25,4 +25,9 @@ public class Vaccine extends BaseEntity {
 
     @Column(name = "description")
     private String description;
+
+    public Vaccine(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

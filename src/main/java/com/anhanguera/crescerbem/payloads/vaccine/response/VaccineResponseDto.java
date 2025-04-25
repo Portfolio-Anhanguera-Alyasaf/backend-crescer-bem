@@ -1,4 +1,10 @@
 package com.anhanguera.crescerbem.payloads.vaccine.response;
 
-public record VaccineResponseDto() {
+import java.util.UUID;
+
+public record VaccineResponseDto(
+        UUID id,
+        String name,
+        String description
+) {
 }
