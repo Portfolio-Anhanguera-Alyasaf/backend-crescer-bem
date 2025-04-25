@@ -1,8 +1,8 @@
-package com.anhanguera.crescerbem.payloads.children.request;
+package com.anhanguera.crescerbem.payloads.children.response;
 
 import java.time.LocalDateTime;
 
-public record UpdateChildrenDto(
+public record ChildrenResponseDto(
         String name,
         LocalDateTime birthday,
         double weight,

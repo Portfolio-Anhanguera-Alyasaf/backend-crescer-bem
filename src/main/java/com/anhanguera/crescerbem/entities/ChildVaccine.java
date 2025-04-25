@@ -30,4 +30,10 @@ public class ChildVaccine extends BaseEntity {
 
     @Column(name = "applied")
     private boolean applied;
+
+    public ChildVaccine(Children child, Vaccine vaccine, boolean applied) {
+        this.child = child;
+        this.vaccine = vaccine;
+        this.applied = applied;
+    }
 }
