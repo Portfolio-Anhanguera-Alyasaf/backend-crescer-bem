@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +26,18 @@ public class JwtServiceImpl implements JwtService {
     private String secret;
 
     @Override
-    public String generateToken(UserDetails userDetails, long expiration) {
-        return Jwts.builder()
+    public Map<String, Object> generateToken(UserDetails userDetails, long expiration) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(generateExpirationToken(expiration))
                 .claim("type", "access")
                 .signWith(getSecretKey())
-                .compact();
+                .compact());
+
+        response.put("expiresToken", generateExpirationToken(expiration));
+        return response;
     }
 
     @Override

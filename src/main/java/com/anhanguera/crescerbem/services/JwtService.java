@@ -2,8 +2,10 @@ package com.anhanguera.crescerbem.services;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Map;
+
 public interface JwtService {
-    String generateToken(UserDetails userDetails, long expiration);
+    Map<String, Object> generateToken(UserDetails userDetails, long expiration);
 
     boolean isTokenValid(String token);
 

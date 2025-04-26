@@ -37,12 +37,15 @@ public class ChildrenServiceImpl implements ChildrenService {
 
     @Override
     public PaginationDto<ChildrenResponseDto> getAll(int page, int pageSize) {
+        User user = getUserLogged();
+
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Children> pager = repository.findAll(pageable);
         return new PaginationDto<>(
                 pager.getContent()
                         .stream()
-                        .map(children -> new ChildrenResponseDto(children.getName(), children.getBirthday(), children.getWeight(), children.getHeight())).toList(),
+                        .filter((children -> children.getUser().getUserId().equals(user.getUserId())))
+                        .map(children -> new ChildrenResponseDto(children.getChildrenId(), children.getName(), children.getBirthday(), children.getWeight(), children.getHeight())).toList(),
                 new PagerResponseDto(
                         pager.getNumber(), pager.getSize(),
                         pager.getTotalElements(), pager.getTotalPages()
@@ -87,13 +90,22 @@ public class ChildrenServiceImpl implements ChildrenService {
     @Override
     public ChildrenResponseDto getById(UUID id) {
         return repository.findById(id)
-                .map(children -> new ChildrenResponseDto(children.getName(), children.getBirthday(), children.getWeight(), children.getHeight()))
+                .map(children -> new ChildrenResponseDto(children.getChildrenId(), children.getName(), children.getBirthday(), children.getWeight(), children.getHeight()))
                 .orElseThrow(() -> new EntityNotFoundException("Ops! Consulta não marcada."));
     }
 
     @Override
     public void deleteById(UUID id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public void applyVaccine(UUID idChildren) {
+        var childVaccine = childVaccineRepository.findByChildId(idChildren)
+                .orElseThrow(() -> new EntityNotFoundException("Ops! Não foi possível localizar alguma vacina nessa criança."));
+
+        childVaccine.setApplied(true);
+        childVaccineRepository.save(childVaccine);
     }
 
     private Set<Consultation> getConsultations(Set<UUID> ids) {

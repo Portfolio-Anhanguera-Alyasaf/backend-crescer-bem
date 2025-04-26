@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +34,9 @@ public class AuthServiceImpl implements AuthService {
         var token = new UsernamePasswordAuthenticationToken(credentials.email(), credentials.password());
         var auth = authenticationManager.authenticate(token);
 
-        return new AuthResponseDto(jwtService.generateToken((UserDetails) auth.getPrincipal(), expiration),
-                jwtService.generateRefreshToken((UserDetails) auth.getPrincipal(), expirationRefreshToken));
+        var tokenAndExpires = jwtService.generateToken((UserDetails) auth.getPrincipal(), expiration);
+        return new AuthResponseDto((String) tokenAndExpires.get("token"),
+                jwtService.generateRefreshToken((UserDetails) auth.getPrincipal(), expirationRefreshToken), (Date) tokenAndExpires.get("expiresToken"));
     }
 
     @Override
@@ -47,7 +49,8 @@ public class AuthServiceImpl implements AuthService {
         var user = new UsernamePasswordAuthenticationToken(userDetails, null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(user);
 
-        return new AuthResponseDto(jwtService.generateToken((UserDetails) user.getPrincipal(), expiration),
-                jwtService.generateRefreshToken((UserDetails) user.getPrincipal(), expirationRefreshToken));
+        var tokenAndExpires = jwtService.generateToken((UserDetails) user.getPrincipal(), expiration);
+        return new AuthResponseDto((String) tokenAndExpires.get("token"),
+                jwtService.generateRefreshToken((UserDetails) user.getPrincipal(), expirationRefreshToken), (Date) tokenAndExpires.get("expiresToken"));
     }
 }

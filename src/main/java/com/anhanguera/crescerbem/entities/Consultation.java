@@ -30,6 +30,9 @@ public class Consultation extends BaseEntity {
     @Column(name = "date_consult")
     private LocalDateTime dateConsult;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Consultation(String doctorName, String hospitalName, LocalDateTime dateConsult) {
         this.doctorName = doctorName;
